@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>잠백이 30초 진단 — 나에게 맞는 제품 찾기</title>
+
+<!-- ===== GA4 : 아래 G-L1S8D2QNPK 2군데를 네 측정 ID로 교체 ===== -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L1S8D2QNPK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L1S8D2QNPK');
+</script>
+<!-- ============================================================ -->
+
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --surface:#F7F7FA;
+    --raised:#FFFFFF;
+    --raised-2:#EEECF8;
+    --line:#E6E6EC;
+    --line-soft:#F0F0F4;
+    --text:#16151D;
+    --muted:#6C6B78;
+    --muted-2:#A6A5B2;
+    --accent:#6B51EE;
+    --accent-press:#5A41D6;
+    --ink:#FFFFFF;
+    --r:14px;
+    --maxw:480px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+    color:var(--text);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding:0 20px;
+    padding-bottom:calc(20px + env(safe-area-inset-bottom));
+  }
+  .mono{
+    font-family:'SF Mono',ui-monospace,'Menlo',monospace;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:.04em;
+  }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0 14px;
+    position:sticky;top:0;background:var(--bg);z-index:5;
+  }
+  .brand{font-weight:800;font-size:15px;letter-spacing:-.01em;}
+  .brand b{color:var(--accent);}
+  .counter{font-size:12px;color:var(--muted);}
+  .counter .cur{color:var(--text);font-weight:600;}
+
+  /* progress */
+  .bar{height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+  .bar > i{display:block;height:100%;width:0;background:var(--accent);
+    transition:width .45s cubic-bezier(.4,0,.2,1);}
+
+  /* ---- Screens ---- */
+  .screen{flex:1;display:none;flex-direction:column;}
+  .screen.active{display:flex;animation:fade .4s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* ---- Intro ---- */
+  .intro{justify-content:center;text-align:left;padding:8px 0 32px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;font-weight:600;color:var(--accent);
+    letter-spacing:.06em;margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
+    animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .h1{
+    font-size:clamp(30px,8.5vw,40px);
+    font-weight:800;line-height:1.12;letter-spacing:-.03em;margin:0 0 18px;
+  }
+  .h1 .hl{color:var(--accent);}
+  .lead{color:var(--muted);font-size:15px;margin:0 0 34px;max-width:30ch;}
+  .lead b{color:var(--text);font-weight:600;}
+  .meta-row{display:flex;gap:8px;margin-bottom:34px;flex-wrap:wrap;}
+  .chip{
+    border:1px solid var(--line);border-radius:99px;padding:7px 13px;
+    font-size:12px;color:var(--muted);font-weight:500;
+  }
+
+  /* ---- Question ---- */
+  .qhead{padding:8px 0 22px;}
+  .qkicker{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.04em;margin-bottom:10px;}
+  .qtitle{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.25;margin:0;}
+  .qtitle small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-top:8px;letter-spacing:0;}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:2px;}
+  .opt{
+    appearance:none;border:1px solid var(--line);background:var(--surface);
+    color:var(--text);text-align:left;border-radius:var(--r);
+    padding:17px 16px;font-size:15.5px;font-weight:600;font-family:inherit;
+    cursor:pointer;display:flex;align-items:center;gap:13px;
+    transition:border-color .15s,background .15s,transform .08s;
+  }
+  .opt:hover{border-color:#CCCBD6;}
+  .opt:active{transform:scale(.985);}
+  .opt .ic{
+    width:34px;height:34px;flex:none;border-radius:9px;background:var(--raised-2);
+    display:grid;place-items:center;font-size:17px;
+  }
+  .opt .sub{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:2px;}
+  .opt .tx{display:flex;flex-direction:column;}
+  .opt.sel{border-color:var(--accent);background:rgba(107,81,238,.06);}
+  .opt.sel .ic{background:var(--accent);}
+  .opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  /* back */
+  .backrow{margin-top:auto;padding-top:24px;}
+  .back{background:none;border:none;color:var(--muted-2);font-size:13px;font-weight:600;
+    font-family:inherit;cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:6px;}
+  .back:hover{color:var(--muted);}
+
+  /* ---- CTA buttons ---- */
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    background:var(--accent);color:var(--ink);border:none;border-radius:var(--r);
+    padding:18px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;
+    letter-spacing:-.01em;transition:background .15s,transform .08s,box-shadow .15s;text-decoration:none;
+    box-shadow:0 6px 18px rgba(107,81,238,.28);
+  }
+  .btn:hover{background:var(--accent-press);box-shadow:0 8px 22px rgba(107,81,238,.34);}
+  .btn:active{transform:scale(.985);}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--text);box-shadow:none;}
+  .btn.ghost:hover{background:var(--surface);border-color:#CCCBD6;box-shadow:none;}
+
+  /* ---- Loading ---- */
+  .loading{justify-content:center;align-items:center;text-align:center;}
+  .ring{width:52px;height:52px;border-radius:50%;border:3px solid var(--line);
+    border-top-color:var(--accent);animation:spin .8s linear infinite;margin-bottom:22px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading p{color:var(--muted);font-size:14px;font-weight:500;}
+  .loading .lstep{color:var(--text);font-weight:700;font-size:16px;margin-bottom:6px;}
+
+  /* ---- Result ---- */
+  .result{padding:8px 0 0;}
+  .rcard{
+    background:linear-gradient(180deg,var(--raised) 0%,var(--surface) 100%);
+    border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    box-shadow:0 8px 30px rgba(22,21,40,.07);
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(14px) scale(.99);}to{opacity:1;transform:none;}}
+  .rtop{padding:22px 20px 20px;border-bottom:1px dashed var(--line);position:relative;}
+  .rtop:before,.rtop:after{content:"";position:absolute;bottom:-9px;width:18px;height:18px;
+    border-radius:50%;background:var(--bg);}
+  .rtop:before{left:-9px;}
+  .rtop:after{right:-9px;}
+  .rlabel{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.14em;margin-bottom:12px;}
+  .rcode{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px;}
+  .rname{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1;}
+  .rname .en{color:var(--accent);}
+  .rdesc{font-size:14.5px;color:var(--muted);margin:0;line-height:1.6;}
+  .rdesc b{color:var(--text);font-weight:600;}
+
+  .rbody{padding:20px;}
+  .rsec-label{font-size:11px;color:var(--muted-2);font-weight:700;letter-spacing:.1em;margin-bottom:13px;
+    display:flex;align-items:center;gap:9px;}
+  .rsec-label:after{content:"";flex:1;height:1px;background:var(--line-soft);}
+  .prod{
+    display:flex;align-items:center;gap:13px;padding:13px 10px 13px 0;border-bottom:1px solid var(--line-soft);
+    text-decoration:none;color:var(--text);transition:background .12s,padding .12s;border-radius:8px;
+  }
+  .prod:last-child{border-bottom:none;}
+  .prod:hover{background:rgba(0,0,0,.025);padding-left:8px;padding-right:8px;}
+  .prod:active{background:rgba(0,0,0,.05);}
+  .prod:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .pnum{width:24px;height:24px;flex:none;border-radius:7px;background:var(--raised-2);
+    display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--accent);}
+  .pinfo{flex:1;min-width:0;}
+  .pname-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .pname{font-size:15px;font-weight:700;letter-spacing:-.01em;}
+  .preason{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .ptag{font-size:10px;font-weight:700;padding:3px 7px;border-radius:99px;flex:none;
+    background:var(--raised-2);color:var(--muted);}
+  .ptag.core{background:rgba(107,81,238,.1);color:var(--accent);}
+  .pgo{width:30px;height:30px;flex:none;border-radius:50%;background:rgba(107,81,238,.1);
+    display:grid;place-items:center;color:var(--accent);transition:background .15s,transform .15s,color .15s;}
+  .pgo svg{width:15px;height:15px;}
+  .prod:hover .pgo{background:var(--accent);color:#fff;transform:translateX(2px);}
+  .prodhint{font-size:11.5px;color:var(--muted-2);margin:-4px 0 10px;}
+
+  .protocol{margin-top:18px;background:var(--surface);border:1px solid var(--line-soft);
+    border-radius:12px;padding:15px 16px;}
+  .protocol .pt-l{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.1em;margin-bottom:10px;}
+  .ptl{display:flex;gap:11px;align-items:baseline;font-size:13.5px;margin-bottom:7px;}
+  .ptl:last-child{margin-bottom:0;}
+  .ptl .t{color:var(--muted);font-weight:700;min-width:60px;flex:none;}
+  .ptl .v{color:var(--text);font-weight:500;}
+
+  .ractions{margin-top:22px;display:flex;flex-direction:column;gap:10px;}
+  .restart{background:none;border:none;color:var(--muted-2);font-size:13px;font-weight:600;
+    font-family:inherit;cursor:pointer;padding:14px;text-align:center;}
+  .restart:hover{color:var(--muted);}
+  .disclaim{font-size:11px;color:var(--muted-2);text-align:center;margin-top:18px;line-height:1.6;}
+
+  .footnote{font-size:11px;color:var(--muted-2);text-align:center;padding:24px 0 10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- progress / topbar (hidden on intro) -->
+  <div id="hud" style="display:none">
+    <div class="topbar">
+      <div class="brand">잠<b>백이</b> 진단</div>
+      <div class="counter mono"><span class="cur" id="cnum">01</span> / 06</div>
+    </div>
+    <div class="bar"><i id="prog"></i></div>
+  </div>
+
+  <!-- ===== INTRO ===== -->
+  <section class="screen active intro" id="s-intro">
+    <div class="eyebrow"><span class="dot"></span>30초 무료 진단</div>
+    <h1 class="h1">잠백이 중에 뭐가<br>필요한지 모르시겠나요?<br><span class="hl">잠백이가 추천해드릴게요.</span></h1>
+    <p class="lead">제품이 많아서 고민되시죠. <b>목표·운동경력·고민</b> 6개만 답하면, 지금 너한테 필요한 조합을 처방해드릴게요.</p>
+    <div class="meta-row">
+      <span class="chip">6문항</span>
+      <span class="chip">약 30초</span>
+      <span class="chip">맞춤 세트 추천</span>
+    </div>
+    <button class="btn" onclick="start()">진단 시작하기 →</button>
+  </section>
+
+  <!-- ===== QUESTION ===== -->
+  <section class="screen" id="s-quiz">
+    <div class="qhead">
+      <div class="qkicker mono" id="qk">QUESTION 01</div>
+      <h2 class="qtitle" id="qt">질문<small id="qs"></small></h2>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="backrow"><button class="back" id="backBtn" onclick="back()">← 이전 질문</button></div>
+  </section>
+
+  <!-- ===== LOADING ===== -->
+  <section class="screen loading" id="s-loading">
+    <div class="ring"></div>
+    <div class="lstep" id="lstep">답변 분석 중…</div>
+    <p id="lsub">너한테 맞는 조합 찾는 중</p>
+  </section>
+
+  <!-- ===== RESULT ===== -->
+  <section class="screen result" id="s-result">
+    <div class="rcard">
+      <div class="rtop">
+        <div class="rlabel">잠백이 처방전 / PROTOCOL</div>
+        <div class="rcode mono" id="rcode">TYPE —</div>
+        <h2 class="rname" id="rname"></h2>
+        <p class="rdesc" id="rdesc"></p>
+      </div>
+      <div class="rbody">
+        <div class="rsec-label">추천 조합</div>
+        <div class="prodhint">제품을 탭하면 상세페이지로 바로 이동해요 ↗</div>
+        <div id="prodList"></div>
+
+        <div class="protocol">
+          <div class="pt-l mono">루틴 가이드</div>
+          <div id="ptList"></div>
+        </div>
+
+        <div class="ractions">
+          <a class="btn" id="ctaBtn" href="#" target="_blank" rel="noopener">다른 제품들도 구경가기 →</a>
+          <button class="btn ghost" onclick="shareResult()">결과 공유하기</button>
+          <button class="restart" onclick="restart()">처음부터 다시 진단</button>
+        </div>
+        <p class="disclaim">본 추천은 일반적인 운동·영양 가이드이며 건강기능식품은 질병의 예방·치료를 위한 의약품이 아닙니다.</p>
+      </div>
+    </div>
+    <div class="footnote">잠백이 · 60만이 함께하는 남자 건강 커뮤니티</div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   잠백이 진단 퍼널
+   - 자사몰 연결 시: PRODUCTS[].url 과 RESULTS[].cartUrl 만 교체
+   ============================================================ */
+
+/* 제품 마스터 — 실제 잠백이 자사몰 제품명 + 상세페이지 링크 (storefront 완전 경로) */
+const PRODUCTS = {
+  whey:    {name:"에센셜 락토프리 웨이프로틴",  url:"https://jambaekee.com/product/잠백이-에센셜-락토프리-웨이프로틴-11종/227/category/42/display/1/"},
+  creaV:   {name:"저스트 크레아틴 300g",        url:"https://jambaekee.com/product/잠백이-저스트-크레아틴-300g/200/category/42/display/1/"},
+  creaP:   {name:"크레아퓨어 크레아틴 300g",    url:"https://jambaekee.com/product/잠백이-크레아퓨어-크레아틴-300g/173/category/42/display/1/"},
+  bcaa:    {name:"아지노 BCAA",                 url:"https://jambaekee.com/product/잠백이-아지노-bcaa-2종/181/category/42/display/1/"},
+  eaa:     {name:"에센셜 EAA 아미노산",          url:"https://jambaekee.com/product/잠백이-에센셜-eaa-아미노산-300g-4종/260/category/42/display/1/"},
+  gluta:   {name:"아지노 글루타민",              url:"https://jambaekee.com/product/잠백이-아지노-글루타민-300g-2종/187/category/42/display/1/"},
+  carni:   {name:"팻커팅 엘 카르니틴",           url:"https://jambaekee.com/product/잠백이-팻커팅-엘-카르니틴-30개입/193/category/42/display/1/"},
+  fiber:   {name:"차전자피 똥쟁이 식이섬유",      url:"https://jambaekee.com/product/잠백이-차전자피-똥쟁이-14포/137/category/30/display/1/"},
+  berb:    {name:"베르베린",                    url:"https://jambaekee.com/product/잠백이-베르베린-60정/258/category/30/display/1/"},
+  chicken: {name:"에센셜 조각 닭가슴살",          url:"https://jambaekee.com/product/잠백이-에센셜-조각-닭가슴살-4종/254/category/69/display/1/"},
+  multi:   {name:"데일리 종합비타민",            url:"https://jambaekee.com/product/잠백이-데일리-종합비타민-30정/135/category/30/display/1/"},
+  omega:   {name:"데일리 알티지 오메가3",         url:"https://jambaekee.com/product/잠백이-데일리-알티지-오메가3-30정/239/category/30/display/1/"},
+  probio:  {name:"유산균 스틱 30포",             url:"https://jambaekee.com/product/잠백이-유산균-스틱-30포/129/category/30/display/1/"},
+};
+
+/* 보완 제품: '요즘 고민(Q4)' 답변 → 얹어줄 1제품 */
+const ADDON = {
+  protein: {key:"eaa",    reason:"단백질 합성 끌어올리는 EAA로 보강"},
+  fat:     {key:"berb",   reason:"체지방·혈당 관리 도와주는 베르베린"},
+  fatigue: {key:"multi",  reason:"매일 빠지는 영양소부터 메우기"},
+  gut:     {key:"probio", reason:"속·장 잡으면 흡수율도 같이 올라감"},
+  blood:   {key:"omega",  reason:"혈행·수치 관리에 가장 기본"},
+};
+
+/* 질문 정의 */
+const QUESTIONS = [
+  {
+    k:"goal",
+    title:"요즘 운동, 목표가 뭐야?",
+    sub:"제일 크게 잡고 있는 방향 하나만.",
+    opts:[
+      {ic:"💪", t:"근육 키우기",   sub:"벌크업 · 사이즈",      v:"muscle"},
+      {ic:"🔥", t:"체지방 줄이기", sub:"다이어트 · 커팅",      v:"cut"},
+      {ic:"⚡", t:"체력·컨디션",   sub:"덜 지치고 잘 회복",    v:"energy"},
+      {ic:"🩺", t:"건강 챙기기",   sub:"수치·기본기 관리",     v:"health"},
+    ]
+  },
+  {
+    k:"exp",
+    title:"운동 경력 어느 정도야?",
+    sub:"꾸준히 한 기준으로.",
+    opts:[
+      {ic:"🌱", t:"아직 시작 전",  sub:"이제 막 시작하려는 중", v:"new"},
+      {ic:"📈", t:"3개월 미만",    sub:"입문 단계",            v:"early"},
+      {ic:"🏋️", t:"1년 미만",      sub:"루틴 잡혀가는 중",      v:"mid"},
+      {ic:"🔱", t:"1년 이상",      sub:"운동이 생활",          v:"pro"},
+    ]
+  },
+  {
+    k:"meal",
+    title:"하루에 단백질, 챙겨 먹어?",
+    sub:"평소 식사 패턴 기준.",
+    opts:[
+      {ic:"🍜", t:"1~2끼 대충",    sub:"끼니 자주 거름",        v:"low"},
+      {ic:"🍱", t:"3끼는 챙김",    sub:"보통 식단",            v:"ok"},
+      {ic:"🥩", t:"운동식 따로",   sub:"단백질 의식해서 먹음",  v:"high"},
+    ]
+  },
+  {
+    k:"worry",
+    title:"요즘 제일 큰 고민은?",
+    sub:"여기 답이 보완 제품을 결정함.",
+    opts:[
+      {ic:"📉", t:"단백질 부족",       sub:"근손실 걱정",        v:"protein"},
+      {ic:"🫃", t:"뱃살·체지방",       sub:"안 빠지는 살",       v:"fat"},
+      {ic:"😪", t:"만성 피로",         sub:"항상 무기력",        v:"fatigue"},
+      {ic:"🌀", t:"속·장 트러블",      sub:"소화·장 컨디션",     v:"gut"},
+      {ic:"❤️", t:"혈행·건강수치",     sub:"건강검진 빨간불",    v:"blood"},
+    ]
+  },
+  {
+    k:"recover",
+    title:"운동 다음 날, 몸 어때?",
+    sub:"회복력 체크.",
+    opts:[
+      {ic:"🪨", t:"너무 뻐근함",   sub:"근육통 오래감",        v:"sore"},
+      {ic:"😐", t:"그럭저럭",      sub:"평범하게 회복",        v:"normal"},
+      {ic:"🚀", t:"회복 빠름",     sub:"금방 멀쩡",            v:"fast"},
+      {ic:"🛋️", t:"운동 거의 안함", sub:"이제 시작할 거임",     v:"none"},
+    ]
+  },
+  {
+    k:"exp_supp",
+    title:"보충제, 먹어본 적 있어?",
+    sub:"마지막 질문.",
+    opts:[
+      {ic:"❓", t:"처음이라 모름",  sub:"뭐가 뭔지 아예 모름",   v:"none"},
+      {ic:"🥛", t:"프로틴만",      sub:"단백질 정도만 먹어봄",  v:"protein"},
+      {ic:"🧪", t:"이것저것 먹어봄", sub:"여러 개 경험 있음",     v:"many"},
+    ]
+  },
+];
+
+/* 결과 아키타입 */
+const RESULTS = {
+  rookie:{
+    code:"TYPE R · ROOKIE",
+    name:["입문 ", "프로토콜"],
+    share:"나 헬스 입문형 나왔다 🌱 운동 막 시작했으면 이거부터. 너도 30초 진단 ㄱㄱ",
+    desc:"운동 막 시작했으면 복잡하게 갈 거 없음. <b>단백질 채우고 힘 받쳐주는 거 2개</b>면 시작으로 충분하다.",
+    core:[
+      {key:"whey",  reason:"끼니로 부족한 단백질을 가장 쉽게 채움", tag:"필수"},
+      {key:"creaV", reason:"초보일수록 효과 체감 큰 가성비 1순위", tag:"필수"},
+    ],
+    routine:[
+      ["아침/공복","저스트 크레아틴 한 스쿱 — 매일 같은 시간"],
+      ["운동 후","락토프리 웨이 1스쿱으로 단백질 보충"],
+      ["기억할 것","크레아틴은 매일 꾸준히가 핵심"],
+    ],
+    cartUrl:"https://jambaekee.com/category/헬스보충제/42/"
+  },
+  builder:{
+    code:"TYPE B · BUILDER",
+    name:["벌크업 ", "프로토콜"],
+    share:"나 벌크업형 나왔다 💪 무게 드는 만큼 채워야 안 깎임. 너도 30초 진단 ㄱㄱ",
+    desc:"이미 궤도에 올랐으면 단백질 <b>양 + 출력 + 회복</b> 세 박자. 드는 무게만큼 채워줘야 안 깎인다.",
+    core:[
+      {key:"whey",  reason:"근합성에 필요한 단백질 총량 확보", tag:"필수"},
+      {key:"creaP", reason:"독일산 고순도, 출력·근력 유지의 기본축", tag:"필수"},
+      {key:"bcaa",  reason:"고강도 훈련 중 근손실 방어·회복", tag:"보강"},
+    ],
+    routine:[
+      ["운동 전/중","아지노 BCAA로 버티는 힘 + 회복 시동"],
+      ["운동 후","락토프리 웨이 1~2스쿱"],
+      ["매일","크레아퓨어 꾸준히 + 단백질 체중×1.6g 목표"],
+    ],
+    cartUrl:"https://jambaekee.com/category/헬스보충제/42/"
+  },
+  cutter:{
+    code:"TYPE C · CUTTER",
+    name:["커팅 ", "프로토콜"],
+    share:"나 커팅형 나왔다 🔥 단백질 지키고 체지방 깎는 조합. 너도 30초 진단 ㄱㄱ",
+    desc:"체지방 뺄 땐 <b>단백질은 지키고 칼로리는 관리</b>가 룰. 포만감이랑 식단 컨트롤이 핵심이다.",
+    core:[
+      {key:"whey",    reason:"감량 중 근손실 막는 단백질 지킴이", tag:"필수"},
+      {key:"carni",   reason:"체지방 연소 돕는 팻커팅 카르니틴", tag:"필수"},
+      {key:"fiber",   reason:"식이섬유 포만감으로 군것질 컷", tag:"보강"},
+    ],
+    routine:[
+      ["식전","차전자피 한 포로 포만감 먼저"],
+      ["운동 전","팻커팅 엘 카르니틴"],
+      ["간식 대신","락토프리 웨이로 단백질만 보충"],
+    ],
+    cartUrl:"https://jambaekee.com/category/헬스보충제/42/"
+  },
+  keeper:{
+    code:"TYPE K · KEEPER",
+    name:["컨디션 ", "프로토콜"],
+    share:"나 컨디션형 나왔다 🩺 운동보다 기본 건강 수치부터. 너도 30초 진단 ㄱㄱ",
+    desc:"운동도 좋지만 <b>기본 건강 수치부터</b>. 매일 빠지는 영양소랑 혈행 먼저 잡고 가는 게 순서다.",
+    core:[
+      {key:"multi", reason:"바쁜 일상에 빠지기 쉬운 영양 기본기", tag:"필수"},
+      {key:"omega", reason:"혈행·건강수치 관리의 기본", tag:"필수"},
+      {key:"whey",  reason:"근육량 지키는 단백질도 같이", tag:"보강"},
+    ],
+    routine:[
+      ["아침","종합비타민 + 오메가3 한 번에"],
+      ["식사 부족할 때","락토프리 웨이로 단백질 보충"],
+      ["기억할 것","꾸준한 복용이 수치 개선의 핵심"],
+    ],
+    cartUrl:"https://jambaekee.com/category/영양제/30/"
+  },
+};
+
+/* ---------- state ---------- */
+let idx=0;
+let currentType=null;        // 마지막 진단 결과 타입(이벤트용)
+const answers={};
+
+/* GA4 안전 래퍼 — gtag 없으면 콘솔에만 찍힘 */
+function track(name,params){
+  try{
+    if(typeof gtag==="function") gtag("event",name,params||{});
+    else console.log("[track]",name,params||{});
+  }catch(e){}
+}
+const els={
+  hud:document.getElementById("hud"),
+  prog:document.getElementById("prog"),
+  cnum:document.getElementById("cnum"),
+  qk:document.getElementById("qk"),
+  qt:document.getElementById("qt"),
+  qs:document.getElementById("qs"),
+  opts:document.getElementById("opts"),
+  backBtn:document.getElementById("backBtn"),
+};
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function start(){ idx=0; els.hud.style.display="block"; show("s-quiz"); render(); track("quiz_start"); }
+
+function render(){
+  const q=QUESTIONS[idx];
+  const n=String(idx+1).padStart(2,"0");
+  els.cnum.textContent=n;
+  els.qk.textContent="QUESTION "+n;
+  els.qt.firstChild.textContent=q.title;
+  els.qs.textContent=q.sub;
+  els.prog.style.width=((idx)/QUESTIONS.length*100)+"%";
+  els.backBtn.style.visibility = idx===0 ? "hidden" : "visible";
+
+  els.opts.innerHTML="";
+  q.opts.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="opt"+(answers[q.k]===o.v?" sel":"");
+    b.innerHTML=`<span class="ic">${o.ic}</span>
+      <span class="tx"><span>${o.t}</span><span class="sub">${o.sub}</span></span>`;
+    b.onclick=()=>choose(q.k,o.v);
+    els.opts.appendChild(b);
+  });
+}
+
+function choose(k,v){
+  answers[k]=v;
+  track("quiz_answer",{step:idx+1, question:k, answer:v});
+  // 살짝 선택 피드백 후 다음으로
+  setTimeout(()=>{
+    if(idx<QUESTIONS.length-1){ idx++; render(); }
+    else finish();
+  },180);
+  render();
+}
+
+function back(){ if(idx>0){ idx--; render(); } }
+
+/* ---------- scoring ---------- */
+function scoreType(){
+  const a=answers;
+  let s={rookie:0,builder:0,cutter:0,keeper:0};
+
+  // goal (강한 신호)
+  if(a.goal==="muscle")  s.builder+=3;
+  if(a.goal==="cut")     s.cutter+=3;
+  if(a.goal==="energy"){ s.keeper+=2; s.builder+=1; }
+  if(a.goal==="health")  s.keeper+=3;
+
+  // experience
+  if(a.exp==="new")   s.rookie+=4;
+  if(a.exp==="early") s.rookie+=2;
+  if(a.exp==="mid")   { s.builder+=1; s.cutter+=1; }
+  if(a.exp==="pro")   s.builder+=2;
+
+  // meal
+  if(a.meal==="low")  s.rookie+=1;
+  if(a.meal==="high") s.builder+=1;
+
+  // worry
+  if(a.worry==="fat")     s.cutter+=2;
+  if(a.worry==="fatigue") s.keeper+=2;
+  if(a.worry==="blood")   s.keeper+=2;
+  if(a.worry==="protein") s.builder+=1;
+
+  // recovery
+  if(a.recover==="sore") s.cutter+=1;
+  if(a.recover==="fast") s.builder+=1;
+  if(a.recover==="none") s.rookie+=2;
+
+  // supp experience (처음이면 입문 우선)
+  if(a.exp_supp==="none") s.rookie+=3;
+  if(a.exp_supp==="many") { s.builder+=1; }
+
+  // argmax
+  let best="rookie",max=-1;
+  for(const k in s){ if(s[k]>max){ max=s[k]; best=k; } }
+  return best;
+}
+
+function finish(){
+  els.prog.style.width="100%";
+  show("s-loading");
+  const steps=[
+    ["답변 분석 중…","6가지 항목 매칭하는 중"],
+    ["조합 계산 중…","너한테 맞는 제품 추리는 중"],
+    ["처방전 작성 중…","루틴까지 정리하는 중"],
+  ];
+  let i=0;
+  const ls=document.getElementById("lstep"), lb=document.getElementById("lsub");
+  const t=setInterval(()=>{ i++; if(i<steps.length){ ls.textContent=steps[i][0]; lb.textContent=steps[i][1]; } },520);
+  setTimeout(()=>{ clearInterval(t); buildResult(); },1700);
+}
+
+function buildResult(){
+  const type=scoreType();
+  track("quiz_complete",{result_type:type});
+  renderResult(type);
+}
+
+function renderResult(type){
+  currentType=type;
+  const r=RESULTS[type];
+
+  document.getElementById("rcode").textContent=r.code;
+  document.getElementById("rname").innerHTML=r.name[0]+'<span class="en">'+r.name[1]+'</span>';
+  document.getElementById("rdesc").innerHTML=r.desc;
+  const cta=document.getElementById("ctaBtn");
+  cta.href=r.cartUrl;
+  cta.onclick=()=>track("cta_click",{result_type:type, link_url:r.cartUrl});
+
+  // 결과를 URL에 담아 공유·새로고침 시 유지
+  try{ history.replaceState(null,"", "?type="+type); }catch(e){}
+
+  // 코어 + 고민 기반 보완 제품 (중복 제거)
+  const list=[...r.core.map(c=>({...c,core:true}))];
+  const add=ADDON[answers.worry];
+  if(add && !list.some(p=>p.key===add.key)){
+    list.push({key:add.key, reason:add.reason, tag:"맞춤", core:false});
+  }
+
+  const pl=document.getElementById("prodList");
+  pl.innerHTML="";
+  list.forEach((p,i)=>{
+    const prod=PRODUCTS[p.key];
+    const row=document.createElement("a");
+    row.className="prod";
+    row.href=prod.url;
+    row.target="_blank";
+    row.rel="noopener";
+    row.onclick=()=>track("product_click",{result_type:type, product:prod.name});
+    row.innerHTML=`<span class="pnum mono">${String(i+1).padStart(2,"0")}</span>
+      <div class="pinfo">
+        <div class="pname-row"><span class="pname">${prod.name}</span><span class="ptag ${p.core?'core':''}">${p.tag}</span></div>
+        <div class="preason">${p.reason}</div>
+      </div>
+      <span class="pgo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>`;
+    pl.appendChild(row);
+  });
+
+  const ptl=document.getElementById("ptList");
+  ptl.innerHTML="";
+  r.routine.forEach(([t,v])=>{
+    const d=document.createElement("div");
+    d.className="ptl";
+    d.innerHTML=`<span class="t">${t}</span><span class="v">${v}</span>`;
+    ptl.appendChild(d);
+  });
+
+  els.hud.style.display="none";
+  show("s-result");
+}
+
+function shareResult(){
+  track("share_click",{result_type:currentType});
+  const base=location.origin+location.pathname;
+  const url=base+"?type="+currentType;
+  const r=RESULTS[currentType]||{};
+  const text=r.share||"잠백이 30초 진단으로 내 맞춤 조합 찾았다 💪";
+  if(navigator.share){
+    navigator.share({title:"잠백이 진단",text,url}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text+"\n"+url);
+    alert("결과 링크가 복사됐어! 친구한테 보내봐 👀");
+  }
+}
+
+function restart(){
+  track("quiz_restart",{from_type:currentType});
+  try{ history.replaceState(null,"", location.pathname); }catch(e){}
+  idx=0;
+  for(const k in answers) delete answers[k];
+  els.hud.style.display="none";
+  show("s-intro");
+}
+
+/* 공유 링크(?type=xxx)로 들어오면 진단 건너뛰고 결과 바로 표시 */
+(function initFromUrl(){
+  const t=new URLSearchParams(location.search).get("type");
+  if(t && RESULTS[t]){
+    track("shared_view",{result_type:t});
+    els.hud.style.display="none";
+    renderResult(t);
+  }
+})();
+</script>
+</body>
+</html>
