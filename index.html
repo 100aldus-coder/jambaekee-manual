@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>잠백이 30초 진단 — 나에게 맞는 제품 찾기</title>
 
-<!-- ===== GA4 : 아래 G-L1S8D2QNPK 2군데를 네 측정 ID로 교체 ===== -->
+<!-- ===== GA4 측정 ID: G-L1S8D2QNPK (잠백이 진단용 속성, 설정 완료) ===== -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-L1S8D2QNPK"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -501,6 +501,12 @@ function track(name,params){
     else console.log("[track]",name,params||{});
   }catch(e){}
 }
+
+/* 자사몰 링크에 UTM 태그 부착 (진단 출처 → 자사몰 GA에서 매출 매칭용) */
+function withUtm(url,content){
+  const u="utm_source=jindan&utm_medium=quiz&utm_campaign=jambaekee_diagnosis&utm_content="+encodeURIComponent(content);
+  return url+(url.includes("?")?"&":"?")+u;
+}
 const els={
   hud:document.getElementById("hud"),
   prog:document.getElementById("prog"),
@@ -624,7 +630,7 @@ function renderResult(type){
   document.getElementById("rname").innerHTML=r.name[0]+'<span class="en">'+r.name[1]+'</span>';
   document.getElementById("rdesc").innerHTML=r.desc;
   const cta=document.getElementById("ctaBtn");
-  cta.href=r.cartUrl;
+  cta.href=withUtm(r.cartUrl, type+"_cta");
   cta.onclick=()=>track("cta_click",{result_type:type, link_url:r.cartUrl});
 
   // 결과를 URL에 담아 공유·새로고침 시 유지
@@ -643,7 +649,7 @@ function renderResult(type){
     const prod=PRODUCTS[p.key];
     const row=document.createElement("a");
     row.className="prod";
-    row.href=prod.url;
+    row.href=withUtm(prod.url, type+"_"+p.key);
     row.target="_blank";
     row.rel="noopener";
     row.onclick=()=>track("product_click",{result_type:type, product:prod.name});
