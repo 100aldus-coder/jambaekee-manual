@@ -342,11 +342,11 @@ const PRODUCTS = {
 
 /* 보완 제품: '요즘 고민(Q4)' 답변 → 얹어줄 1제품 */
 const ADDON = {
-  protein: {key:"eaa",    reason:"단백질 합성 끌어올리는 EAA로 보강"},
-  fat:     {key:"berb",   reason:"체지방·혈당 관리 도와주는 베르베린"},
+  protein: {key:"eaa",    reason:"모든 필수 아미노산을 포함한 EAA로 단백질 보충"},
+  fat:     {key:"berb",   reason:"순도 90%의 매자나무열매"},
   fatigue: {key:"multi",  reason:"매일 빠지는 영양소부터 메우기"},
-  gut:     {key:"probio", reason:"속·장 잡으면 흡수율도 같이 올라감"},
-  blood:   {key:"omega",  reason:"혈행·수치 관리에 가장 기본"},
+  gut:     {key:"probio", reason:"100억 보장 유산균으로 편안하게"},
+  blood:   {key:"omega",  reason:"혈행·중성지질 개선 관리의 기본"},
 };
 
 /* 질문 정의 */
@@ -427,7 +427,7 @@ const RESULTS = {
     desc:"운동 막 시작했으면 복잡하게 갈 거 없음. <b>단백질 채우고 힘 받쳐주는 거 2개</b>면 시작으로 충분하다.",
     core:[
       {key:"whey",  reason:"끼니로 부족한 단백질을 가장 쉽게 채움", tag:"필수"},
-      {key:"creaV", reason:"초보일수록 효과 체감 큰 가성비 1순위", tag:"필수"},
+      {key:"creaV", reason:"운동 수행능력 향상에 도움을 줄 수 있는 크레아틴 보충 가성비 1순위", tag:"필수"},
     ],
     routine:[
       ["아침/공복","저스트 크레아틴 한 스쿱 — 매일 같은 시간"],
@@ -442,9 +442,9 @@ const RESULTS = {
     share:"나 벌크업형 나왔다 💪 무게 드는 만큼 채워야 안 깎임. 너도 30초 진단 ㄱㄱ",
     desc:"이미 궤도에 올랐으면 단백질 <b>양 + 출력 + 회복</b> 세 박자. 드는 무게만큼 채워줘야 안 깎인다.",
     core:[
-      {key:"whey",  reason:"근합성에 필요한 단백질 총량 확보", tag:"필수"},
-      {key:"creaP", reason:"독일산 고순도, 출력·근력 유지의 기본축", tag:"필수"},
-      {key:"bcaa",  reason:"고강도 훈련 중 근손실 방어·회복", tag:"보강"},
+      {key:"whey",  reason:"벌크업에 빠질 수 없는 단백질 보충", tag:"필수"},
+      {key:"creaP", reason:"운동 수행능력 향상에 도움을 줄 수 있는 독일산 크레아틴 보충", tag:"필수"},
+      {key:"bcaa",  reason:"아지퓨어 bcaa로 운동중 필수 아미노산 3종 보충", tag:"보강"},
     ],
     routine:[
       ["운동 전/중","아지노 BCAA로 버티는 힘 + 회복 시동"],
@@ -459,9 +459,9 @@ const RESULTS = {
     share:"나 커팅형 나왔다 🔥 단백질 지키고 체지방 깎는 조합. 너도 30초 진단 ㄱㄱ",
     desc:"체지방 뺄 땐 <b>단백질은 지키고 칼로리는 관리</b>가 룰. 포만감이랑 식단 컨트롤이 핵심이다.",
     core:[
-      {key:"whey",    reason:"감량 중 근손실 막는 단백질 지킴이", tag:"필수"},
+      {key:"whey",    reason:"감량중에는 더욱 중요한 단백질 보충", tag:"필수"},
       {key:"carni",   reason:"체지방 연소 돕는 팻커팅 카르니틴", tag:"필수"},
-      {key:"fiber",   reason:"식이섬유 포만감으로 군것질 컷", tag:"보강"},
+      {key:"fiber",   reason:"배변활동에 도움을 주는 차전자피 식이섬유", tag:"보강"},
     ],
     routine:[
       ["식전","차전자피 한 포로 포만감 먼저"],
@@ -477,8 +477,8 @@ const RESULTS = {
     desc:"운동도 좋지만 <b>기본 건강 수치부터</b>. 매일 빠지는 영양소랑 혈행 먼저 잡고 가는 게 순서다.",
     core:[
       {key:"multi", reason:"바쁜 일상에 빠지기 쉬운 영양 기본기", tag:"필수"},
-      {key:"omega", reason:"혈행·건강수치 관리의 기본", tag:"필수"},
-      {key:"whey",  reason:"근육량 지키는 단백질도 같이", tag:"보강"},
+      {key:"omega", reason:"혈행·중성지질 개선 관리의 기본", tag:"필수"},
+      {key:"whey",  reason:"언제나 단백질 보충은 필수", tag:"보강"},
     ],
     routine:[
       ["아침","종합비타민 + 오메가3 한 번에"],
